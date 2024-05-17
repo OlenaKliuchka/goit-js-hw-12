@@ -46,7 +46,7 @@ async function onSearchFormSubmit(event) {
 
     if (data.total === 0) {
       iziToast.show({
-        message: 'Sorry, there are no images for this query',
+        message: 'Search params is not valid',
         position: 'topRight',
         timeout: 2000,
         color: 'red',
@@ -75,7 +75,7 @@ async function onSearchFormSubmit(event) {
     if (error.message === 'rateLimited') {
       message = 'Too many requests';
     } else {
-      message += 'Search params is not valid';
+      message += 'Sorry, there are no images for this query';
     }
 
     iziToast.error({
