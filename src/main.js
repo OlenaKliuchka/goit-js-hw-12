@@ -21,6 +21,9 @@ let totalPages = 0;
 async function onSearchFormSubmit(event) {
   event.preventDefault();
 
+  newsCurrentPage = 1;
+  galleryEl.innerHTML = '';
+
   const form = event.target;
   searchQuery = form.elements.searchKeyword.value.trim();
   loadMoreBtn.classList.add('is-hidden');
@@ -38,7 +41,7 @@ async function onSearchFormSubmit(event) {
     loadMoreBtn.classList.add('is-hidden');
     return;
   }
-  resetPageAndResults();
+
   galleryEl.innerHTML = '';
   loaderEl.classList.remove('is-hidden');
 
@@ -139,12 +142,6 @@ const onLoadMorePressed = async event => {
     });
   }
 };
-
-function resetPageAndResults() {
-  newsCurrentPage = 1;
-
-  galleryEl.innerHTML = '';
-}
 
 searchFormEl.addEventListener('submit', onSearchFormSubmit);
 loadMoreBtn.addEventListener('click', onLoadMorePressed);
