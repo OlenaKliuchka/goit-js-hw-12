@@ -8,7 +8,7 @@ import { fetchPhotoByQuery } from './js/pixabay-api.js';
 import { createImageGalleryItem } from './js/render-functions.js';
 
 import { PER_PAGE } from './js/pixabay-api.js';
-const containerEl = document.querySelector('.js-container');
+
 const galleryEl = document.querySelector('.js-gallery');
 const searchFormEl = document.querySelector('.js-search-form');
 const loaderEl = document.querySelector('.js-loader');
@@ -38,7 +38,7 @@ async function onSearchFormSubmit(event) {
     loadMoreBtn.classList.add('is-hidden');
     return;
   }
-
+  resetPageAndResults();
   galleryEl.innerHTML = '';
   loaderEl.classList.remove('is-hidden');
 
@@ -139,6 +139,12 @@ const onLoadMorePressed = async event => {
     });
   }
 };
+
+function resetPageAndResults() {
+  newsCurrentPage = 1;
+
+  galleryEl.innerHTML = '';
+}
 
 searchFormEl.addEventListener('submit', onSearchFormSubmit);
 loadMoreBtn.addEventListener('click', onLoadMorePressed);
