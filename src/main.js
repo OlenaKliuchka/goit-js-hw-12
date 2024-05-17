@@ -8,7 +8,7 @@ import { fetchPhotoByQuery } from './js/pixabay-api.js';
 import { createImageGalleryItem } from './js/render-functions.js';
 
 import { PER_PAGE } from './js/pixabay-api.js';
-
+const containerEl = document.querySelector('.js-container');
 const galleryEl = document.querySelector('.js-gallery');
 const searchFormEl = document.querySelector('.js-search-form');
 const loaderEl = document.querySelector('.js-loader');
@@ -23,11 +23,9 @@ async function onSearchFormSubmit(event) {
 
   const form = event.target;
   searchQuery = form.elements.searchKeyword.value.trim();
-  galleryEl.innerHTML = '';
+  loadMoreBtn.classList.add('is-hidden');
 
   if (searchQuery === '') {
-    galleryEl.innerHTML = '';
-    event.target.reset();
     iziToast.show({
       message:
         'Sorry, there are no images matching your search query. Please try again!',
@@ -35,6 +33,9 @@ async function onSearchFormSubmit(event) {
       timeout: 2000,
       color: 'red',
     });
+    galleryEl.innerHTML = '';
+    form.reset();
+    loadMoreBtn.classList.add('is-hidden');
     return;
   }
 
@@ -51,7 +52,7 @@ async function onSearchFormSubmit(event) {
         timeout: 2000,
         color: 'red',
       });
-
+      loadMoreBtn.classList.add('is-hidden');
       loaderEl.classList.add('is-hidden');
       event.target.reset();
       return;
@@ -70,6 +71,7 @@ async function onSearchFormSubmit(event) {
     if (totalPages > 1) {
       loadMoreBtn.classList.remove('is-hidden');
     }
+    newsCurrentPage = 1;
   } catch (error) {
     let message = '';
     if (error.message === 'rateLimited') {
@@ -85,7 +87,7 @@ async function onSearchFormSubmit(event) {
     });
   }
 
-  event.target.reset();
+  form.reset();
   loaderEl.classList.add('is-hidden');
 }
 
