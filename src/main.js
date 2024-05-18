@@ -8,6 +8,7 @@ import { fetchPhotoByQuery } from './js/pixabay-api.js';
 import { createImageGalleryItem } from './js/render-functions.js';
 
 import { PER_PAGE } from './js/pixabay-api.js';
+import simpleLightbox from 'simplelightbox';
 
 const galleryEl = document.querySelector('.js-gallery');
 const searchFormEl = document.querySelector('.js-search-form');
@@ -15,13 +16,13 @@ const loaderEl = document.querySelector('.js-loader');
 const loadMoreBtn = document.querySelector('.btn-load-more');
 
 let searchQuery = null;
-let newsCurrentPage = 1;
+let currentPage = 1;
 let totalPages = 0;
 
 async function onSearchFormSubmit(event) {
   event.preventDefault();
 
-  newsCurrentPage = 1;
+  currentPage = 1;
   galleryEl.innerHTML = '';
 
   const form = event.target;
@@ -46,7 +47,7 @@ async function onSearchFormSubmit(event) {
   loaderEl.classList.remove('is-hidden');
 
   try {
-    const { data } = await fetchPhotoByQuery(searchQuery, newsCurrentPage);
+    const { data } = await fetchPhotoByQuery(searchQuery, currentPage);
 
     if (data.total === 0) {
       iziToast.show({
@@ -61,20 +62,17 @@ async function onSearchFormSubmit(event) {
       return;
     }
 
-    const simpleLighbox = new SimpleLightbox('.gallery-list a', {
+    galleryEl.innerHTML = createImageGalleryItem(data.hits);
+
+    const simpleLightbox = new SimpleLightbox('.gallery-list a', {
       captionsData: 'alt',
       captionDelay: 250,
     });
-
-    galleryEl.innerHTML = createImageGalleryItem(data.hits);
-
-    simpleLighbox.refresh();
 
     totalPages = Math.ceil(data.totalHits / PER_PAGE);
     if (totalPages > 1) {
       loadMoreBtn.classList.remove('is-hidden');
     }
-    newsCurrentPage = 1;
   } catch (error) {
     let message = '';
     if (error.message === 'rateLimited') {
@@ -108,23 +106,23 @@ const smoothScrollOnLoadMore = () => {
 
 const onLoadMorePressed = async event => {
   try {
-    newsCurrentPage += 1;
+    currentPage += 1;
 
-    const { data } = await fetchPhotoByQuery(searchQuery, newsCurrentPage);
-
-    const simpleLighbox = new SimpleLightbox('.gallery-list a', {
-      captionsData: 'alt',
-      captionDelay: 250,
-    });
+    const { data } = await fetchPhotoByQuery(searchQuery, currentPage);
 
     galleryEl.insertAdjacentHTML(
       'beforeend',
       createImageGalleryItem(data.hits)
     );
-    simpleLighbox.refresh();
+
+    const simpleLightbox = new SimpleLightbox('.gallery-list a', {
+      captionsData: 'alt',
+      captionDelay: 250,
+    });
+
     smoothScrollOnLoadMore();
 
-    if (newsCurrentPage > totalPages) {
+    if (currentPage > totalPages) {
       loadMoreBtn.classList.add('is-hidden');
       loadMoreBtn.removeEventListener('click', onLoadMorePressed);
       iziToast.error({
