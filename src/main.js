@@ -8,7 +8,6 @@ import { fetchPhotoByQuery } from './js/pixabay-api.js';
 import { createImageGalleryItem } from './js/render-functions.js';
 
 import { PER_PAGE } from './js/pixabay-api.js';
-import simpleLightbox from 'simplelightbox';
 
 const galleryEl = document.querySelector('.js-gallery');
 const searchFormEl = document.querySelector('.js-search-form');
@@ -18,6 +17,11 @@ const loadMoreBtn = document.querySelector('.btn-load-more');
 let searchQuery = null;
 let currentPage = 1;
 let totalPages = 0;
+
+const simpleLightbox = new SimpleLightbox('.gallery-list a', {
+  captionsData: 'alt',
+  captionDelay: 250,
+});
 
 async function onSearchFormSubmit(event) {
   event.preventDefault();
@@ -64,10 +68,7 @@ async function onSearchFormSubmit(event) {
 
     galleryEl.innerHTML = createImageGalleryItem(data.hits);
 
-    const simpleLightbox = new SimpleLightbox('.gallery-list a', {
-      captionsData: 'alt',
-      captionDelay: 250,
-    });
+    simpleLightbox.refresh();
 
     totalPages = Math.ceil(data.totalHits / PER_PAGE);
     if (totalPages > 1) {
@@ -115,11 +116,7 @@ const onLoadMorePressed = async event => {
       createImageGalleryItem(data.hits)
     );
 
-    const simpleLightbox = new SimpleLightbox('.gallery-list a', {
-      captionsData: 'alt',
-      captionDelay: 250,
-    });
-
+    simpleLightbox.refresh();
     smoothScrollOnLoadMore();
 
     if (currentPage > totalPages) {
